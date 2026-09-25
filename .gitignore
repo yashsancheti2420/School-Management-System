@@ -1,0 +1,23 @@
+# Python bytecode and test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local environment and secrets
+.env
+.venv/
+venv/
+env/
+
+# Local application data (never publish student records)
+*.db
+*.sqlite
+*.sqlite3
+
+# Operating-system and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
