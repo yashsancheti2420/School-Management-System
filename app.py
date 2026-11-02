@@ -7,17 +7,26 @@ from pathlib import Path
 from flask import Flask, abort, flash, g, redirect, render_template, request, url_for
 
 BASE_DIR = Path(__file__).resolve().parent
-DEFAULT_DATABASE = BASE_DIR / "schoolmanagement.db"
+
+# On Vercel, serverless containers have a read-only filesystem except for /tmp
+if os.environ.get("VERCEL"):
+    DEFAULT_DATABASE = Path("/tmp/schoolmanagement.db")
+else:
+    DEFAULT_DATABASE = BASE_DIR / "schoolmanagement.db"
 
 # For deployment, set DATABASE_PATH to a persistent-disk location, for example
 # /var/data/schoolmanagement.db on Render.
 database_path = Path(os.environ.get("DATABASE_PATH", DEFAULT_DATABASE))
-secret_key = os.environ.get("SECRET_KEY")
+secret_key = os.environ.get("SECRET_KEY", "vercel-secret-key" if os.environ.get("VERCEL") else None)
 
 if os.environ.get("APP_ENV") == "production" and not secret_key:
     raise RuntimeError("SECRET_KEY must be set when APP_ENV=production.")
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=str(BASE_DIR / "templates"),
+    static_folder=str(BASE_DIR / "static"),
+)
 app.config.update(
     SECRET_KEY=secret_key or "local-development-only-change-me",
     DATABASE=database_path,
